@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ujian Online — SDN 2 Karangmangu</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:    #4f46e5;
+  --primary-dk: #3730a3;
+  --primary-lt: #eef2ff;
+  --primary-bd: #c7d2fe;
+  --green:      #16a34a;
+  --green-lt:   #f0fdf4;
+  --green-bd:   #bbf7d0;
+  --red:        #dc2626;
+  --red-lt:     #fef2f2;
+  --orange:     #d97706;
+  --orange-lt:  #fffbeb;
+  --blue:       #2563eb;
+  --blue-lt:    #eff6ff;
+  --bg:         #f1f5f9;
+  --white:      #ffffff;
+  --surface:    #f8fafc;
+  --border:     #e2e8f0;
+  --border2:    #cbd5e1;
+  --text:       #0f172a;
+  --sub:        #475569;
+  --muted:      #94a3b8;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08);
+  --shadow:     0 4px 16px rgba(0,0,0,.1);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,.15);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+}
+.page-shell { min-height:100vh; display:flex; flex-direction:column; }
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  position: sticky; top:0; z-index:200;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-inner {
+  max-width: 1000px; margin:0 auto;
+  height: 60px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.brand { display:flex; align-items:center; gap:10px; }
+.brand-icon {
+  width:36px; height:36px; background:var(--primary); border-radius:9px;
+  display:flex; align-items:center; justify-content:center; font-size:17px; color:white;
+  box-shadow: 0 2px 8px rgba(79,70,229,.3);
+}
+.brand-name { font-size:16px; font-weight:800; letter-spacing:-0.02em; color:var(--text); }
+.brand-name span { color:var(--primary); }
+
+/* ── MAIN ── */
+.main { flex:1; max-width:1000px; width:100%; margin:0 auto; padding:32px 24px 60px; }
+
+/* ── CARD ── */
+.card { background:var(--white); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden; animation:fadeUp .4s ease both; }
+.card-header { padding:22px 28px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--surface); }
+.card-title { font-size:17px; font-weight:700; letter-spacing:-0.01em; display:flex; align-items:center; gap:8px; }
+.card-body { padding:28px; }
+
+/* ── TABS ── */
+.tabs { display:flex; gap:4px; padding:0 28px; border-bottom:1px solid var(--border); background:var(--surface); overflow-x:auto; }
+.tab { padding:14px 20px; background:none; border:none; border-bottom:3px solid transparent; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:600; color:var(--muted); transition:all .2s; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+.tab:hover { color:var(--primary); }
+.tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+
+/* ── BUTTONS ── */
+.btn { display:inline-flex; align-items:center; gap:7px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:600; padding:11px 20px; border-radius:9px; cursor:pointer; border:none; transition:all .18s; white-space:nowrap; letter-spacing:0.01em; }
+.btn-block { width:100%; justify-content:center; }
+.btn-primary { background:var(--primary); color:white; box-shadow:0 2px 8px rgba(79,70,229,.25); }
+.btn-primary:hover { background:var(--primary-dk); transform:translateY(-1px); box-shadow:0 4px 16px rgba(79,70,229,.35); }
+.btn-primary:disabled { opacity:.6; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn-secondary { background:var(--surface); color:var(--sub); border:1px solid var(--border); }
+.btn-secondary:hover { background:var(--bg); border-color:var(--border2); color:var(--text); }
+.btn-secondary:disabled { opacity:.6; cursor:not-allowed; }
+.btn-success { background:var(--green); color:white; box-shadow:0 2px 8px rgba(22,163,74,.2); }
+.btn-success:hover { background:#15803d; transform:translateY(-1px); }
+.btn-sm { padding:8px 14px; font-size:13px; }
+.btn-lg { padding:14px 28px; font-size:16px; }
+
+/* ── FORM ── */
+.form-group { margin-bottom:20px; }
+.form-label { display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--sub); margin-bottom:8px; }
+.form-control { width:100%; padding:11px 14px; background:var(--surface); border:1px solid var(--border); border-radius:9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; color:var(--text); outline:none; transition:border-color .18s, box-shadow .18s; }
+.form-control:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.1); background:var(--white); }
+.form-control::placeholder { color:var(--muted); }
+.form-control.mono { font-family:'JetBrains Mono',monospace; font-size:13px; }
+textarea.form-control { min-height:130px; resize:vertical; }
+
+/* ── ALERTS ── */
+.alert { padding:14px 16px; border-radius:10px; font-size:13.5px; font-weight:500; display:flex; gap:10px; align-items:flex-start; margin-bottom:16px; border:1px solid; }
+.alert-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.alert-content { flex:1; line-height:1.55; }
+.alert-info    { background:var(--blue-lt);   color:#1e3a5f; border-color:#bfdbfe; }
+.alert-success { background:var(--green-lt);  color:#14532d; border-color:var(--green-bd); }
+.alert-warning { background:var(--orange-lt); color:#78350f; border-color:#fde68a; }
+.alert-danger  { background:var(--red-lt);    color:#7f1d1d; border-color:#fecaca; }
+
+/* ── SECTION CARD ── */
+.section-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px; margin-bottom:20px; }
+.section-card-title { font-size:15px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px; color:var(--text); }
+.duration-badge { display:inline-flex; align-items:center; gap:6px; background:var(--primary-lt); border:1px solid var(--primary-bd); color:var(--primary); font-weight:700; font-size:14px; padding:9px 16px; border-radius:9px; margin-top:10px; }
+
+/* ── BADGE ── */
+.badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; letter-spacing:0.05em; padding:4px 10px; border-radius:20px; text-transform:uppercase; }
+.badge-success { background:var(--green-lt); color:var(--green); border:1px solid var(--green-bd); }
+.badge-danger  { background:var(--red-lt);   color:var(--red);   border:1px solid #fecaca; }
+
+/* ── STAT GRID ── */
+.stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:20px; }
+.stat-card { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center; transition:transform .15s; }
+.stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+.stat-card-icon { font-size:22px; margin-bottom:8px; }
+.stat-val { font-size:32px; font-weight:800; letter-spacing:-0.03em; line-height:1; color:var(--primary); margin-bottom:4px; }
+.stat-val.green { color:var(--green); }
+.stat-val.red   { color:var(--red); }
+.stat-val.orange { color:var(--orange); }
+.stat-lbl { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+thead tr { background:var(--surface); border-bottom:2px solid var(--border); }
+th { padding:12px 14px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); white-space:nowrap; }
+td { padding:13px 14px; border-bottom:1px solid var(--border); color:var(--text); }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:var(--surface); }
+.td-score { font-size:18px; font-weight:800; letter-spacing:-0.02em; }
+
+/* ── TOOLBAR ── */
+.toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding:16px; background:var(--surface); border-radius:10px; border:1px solid var(--border); }
+.toolbar-search { flex:1; min-width:180px; position:relative; }
+.toolbar-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+.toolbar-search .form-control { padding-left:34px; background:var(--white); }
+
+/* ── HIDDEN ── */
+.hidden { display:none !important; }
+
+/* ── INFO BOX ── */
+.info-box { background:var(--blue-lt); border:1px solid #bfdbfe; border-radius:10px; padding:14px 16px; margin-bottom:16px; }
+.info-box p { font-size:13px; color:#1e3a5f; margin:4px 0; line-height:1.6; }
+
+/* ════════════ EXAM PAGES ════════════ */
+.exam-hero { text-align:center; padding:40px 28px 28px; border-bottom:1px solid var(--border); background:linear-gradient(135deg,var(--primary-lt) 0%,#f5f3ff 100%); }
+.exam-hero-icon { width:64px; height:64px; background:var(--primary); border-radius:18px; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:16px; box-shadow:0 4px 16px rgba(79,70,229,.3); }
+.exam-hero h1 { font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text); margin-bottom:6px; }
+.exam-hero p { font-size:14px; color:var(--sub); }
+
+.exam-info-row { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+.exam-info-chip { display:flex; align-items:center; gap:8px; background:var(--white); border:1px solid var(--border); border-radius:10px; padding:12px 16px; flex:1; min-width:100px; box-shadow:var(--shadow-sm); }
+.exam-info-icon { font-size:20px; }
+.exam-info-val { font-size:18px; font-weight:800; color:var(--text); line-height:1; }
+.exam-info-lbl { font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
+
+.admin-header { background:linear-gradient(135deg,var(--primary) 0%,#6366f1 100%); padding:28px; text-align:center; color:white; }
+.admin-header h1 { font-size:26px; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+.admin-header p { font-size:14px; opacity:.8; }
+
+/* ── TIMER ── */
+.timer-wrap { background:linear-gradient(135deg,#ef4444,#dc2626); border-radius:12px; padding:16px 24px; display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; box-shadow:0 4px 16px rgba(220,38,38,.25); }
+.timer-wrap.warning { background:linear-gradient(135deg,#f97316,#ea580c); }
+.timer-label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,.8); }
+.timer-value { font-size:36px; font-weight:800; color:white; letter-spacing:0.04em; font-variant-numeric:tabular-nums; }
+.timer-icon { font-size:28px; }
+
+/* ── PROGRESS ── */
+.progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.progress-label { font-size:12px; font-weight:600; color:var(--sub); }
+.progress-pct { font-size:12px; font-weight:700; color:var(--primary); }
+.progress-track { height:8px; background:var(--border); border-radius:4px; margin-bottom:24px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--primary),#818cf8); border-radius:4px; transition:width .4s ease; width:0%; }
+
+/* ── QUESTION ── */
+.q-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; margin-bottom:4px; }
+.q-number { display:inline-flex; align-items:center; gap:8px; background:var(--primary-lt); color:var(--primary); font-size:13px; font-weight:700; padding:6px 14px; border-radius:20px; margin-bottom:16px; }
+.q-text { font-size:17px; font-weight:600; color:var(--text); line-height:1.65; margin-bottom:22px; }
+.options { display:flex; flex-direction:column; gap:10px; }
+.option { display:flex; align-items:center; gap:14px; background:var(--white); border:2px solid var(--border); padding:14px 18px; border-radius:10px; cursor:pointer; transition:all .18s; text-align:left; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:500; color:var(--text); width:100%; }
+.option:hover { border-color:var(--primary-bd); background:var(--primary-lt); color:var(--primary-dk); }
+.option.selected { border-color:var(--primary); background:var(--primary); color:white; }
+.option-letter { width:30px; height:30px; border-radius:8px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0; transition:all .18s; }
+.option:hover .option-letter { background:white; border-color:var(--primary-bd); color:var(--primary); }
+.option.selected .option-letter { background:rgba(255,255,255,.2); border-color:rgba(255,255,255,.3); color:white; }
+
+.nav-row { display:flex; gap:12px; }
+.nav-row .btn { flex:1; justify-content:center; }
+
+/* ── RESULT ── */
+.result-hero { text-align:center; padding:36px 28px; border-bottom:1px solid var(--border); }
+.score-ring { position:relative; display:inline-block; margin-bottom:20px; }
+.score-ring svg { width:140px; height:140px; transform:rotate(-90deg); }
+.score-ring circle { fill:none; stroke-width:10; }
+.ring-bg   { stroke:var(--border); }
+.ring-fill { stroke:var(--primary); stroke-linecap:round; stroke-dasharray:327; stroke-dashoffset:327; transition:stroke-dashoffset 1.5s cubic-bezier(.23,1,.32,1); }
+.ring-fill.good { stroke:var(--green); }
+.ring-fill.ok   { stroke:var(--orange); }
+.ring-fill.bad  { stroke:var(--red); }
+.score-text { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.score-num { font-size:38px; font-weight:800; letter-spacing:-0.03em; line-height:1; }
+.score-sub { font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.08em; }
+.result-status { font-size:20px; font-weight:800; margin-bottom:6px; }
+.result-sub-text { font-size:14px; color:var(--sub); }
+
+.result-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+.detail-chip { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.detail-chip-lbl { font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:4px; }
+.detail-chip-val { font-size:16px; font-weight:700; color:var(--text); }
+
+.save-section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin:0 28px 28px; }
+.save-section h4 { font-size:14px; font-weight:700; margin-bottom:12px; }
+.wrong-title { font-size:14px; font-weight:700; color:var(--text); padding:16px 28px 12px; border-top:1px solid var(--border); display:flex; align-items:center; gap:6px; }
+
+/* ── SPINNER ── */
+.spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(79,70,229,.2); border-top-color:var(--primary); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:6px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── ANIMATION ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .main{padding:16px 12px 40px}
+  .card-body,.card-header{padding:18px}
+  .tabs{padding:0 12px}
+  .exam-hero{padding:24px 18px 18px}
+  .result-detail-grid{grid-template-columns:1fr}
+  .save-section{margin:0 18px 18px}
+  .q-card{padding:18px}
+  .timer-value{font-size:28px}
+  .nav-row{flex-wrap:wrap}
+  .admin-header{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="page-shell">
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-icon">📝</div>
+        <div class="brand-name">Ujian<span>Online</span></div>
+      </div>
+      <div id="topbarRight"></div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- ══ ADMIN PANEL ══ -->
+    <div id="adminPanel">
+      <div class="card">
+        <div class="admin-header">
+          <h1>🎓 Panel Admin</h1>
+          <p>Kelola soal, pengaturan, dan pantau hasil ujian</p>
+        </div>
+        <div class="tabs" id="adminTabs">
+          <button class="tab active" onclick="showAdminTab('upload',this)">📄 Upload Soal</button>
+          <button class="tab" onclick="showAdminTab('settings',this)">⚙️ Pengaturan</button>
+          <button class="tab" onclick="showAdminTab('dashboard',this)">📊 Dashboard</button>
+        </div>
+
+        <!-- UPLOAD TAB -->
+        <div id="uploadTab" class="card-body">
+          <div class="info-box">
+            <p><strong>Format CSV:</strong> <code style="background:#dbeafe;padding:2px 6px;border-radius:4px">soal,opsi_a,opsi_b,opsi_c,opsi_d,jawaban_benar</code></p>
+            <p><strong>Contoh:</strong> Apa ibu kota Indonesia?,Jakarta,Bandung,Surabaya,Medan,0</p>
+            <p><em>*jawaban_benar: 0=A, 1=B, 2=C, 3=D</em></p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload File CSV</label>
+            <input type="file" id="csvFile" accept=".csv" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Atau Paste Teks CSV</label>
+            <textarea id="csvText" class="form-control" placeholder="Paste isi CSV di sini..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" id="loadQuestionsBtn" style="flex:2;justify-content:center">📥 Muat Soal dari CSV</button>
+            <button class="btn btn-secondary" id="useDefaultBtn" style="flex:1;justify-content:center">Soal Default</button>
+          </div>
+          <div id="questionsLoadedAlert" class="hidden" style="margin-top:14px">
+            <div class="alert alert-success"><span class="alert-icon">✅</span><span class="alert-content"><strong><span id="questionCount">0</span> soal</strong> berhasil dimuat!</span></div>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settingsTab" class="card-body hidden">
+          <div class="section-card">
+            <div class="section-card-title">⏱ Durasi Ujian</div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Durasi (menit)</label>
+              <input type="number" id="examDuration" class="form-control" value="60" min="1" max="180">
+            </div>
+            <div class="duration-badge">⏱ <span id="timeDisplay">60</span> menit</div>
+            <button class="btn btn-success btn-block" id="saveSettingsBtn" style="margin-top:14px">💾 Simpan Durasi</button>
+          </div>
+          <div class="section-card">
+            <div class="section-card-title">🗄 Koneksi Google Sheets</div>
+            <div class="alert alert-info">
+              <span class="alert-icon">ℹ️</span>
+              <span class="alert-content"><strong>Cara mendapatkan URL Web App:</strong><br>1. Google Sheets → Extensions → Apps Script<br>2. Paste Code.gs → Save<br>3. Deploy → New Deployment → Web App → Anyone<br>4. Copy URL → paste di bawah</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">URL Google Apps Script</label>
+              <input type="text" id="webAppUrl" class="form-control mono" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <button class="btn btn-success btn-block" id="saveDbUrlBtn">💾 Simpan & Test Koneksi</button>
+            <div id="connStatus" style="margin-top:12px"></div>
+          </div>
+          <div class="section-card">
+            <div class="section-card-title">🎓 Halaman Siswa</div>
+            <div class="alert alert-warning"><span class="alert-icon">⚠️</span><span class="alert-content">Pastikan soal sudah diupload dan URL database sudah diset.</span></div>
+            <button class="btn btn-primary btn-block" id="openStudentPageBtn">🚀 Buka Halaman Ujian Siswa</button>
+          </div>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboardTab" class="card-body hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+            <div style="font-size:16px;font-weight:700">📊 Rekap Hasil Ujian</div>
+            <button class="btn btn-success btn-sm" onclick="loadDashboard()">🔄 Refresh</button>
+          </div>
+          <div id="dashSummary"></div>
+          <div id="dashTable"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LOGIN PAGE ══ -->
+    <div id="loginPage" class="hidden">
+      <div class="card">
+        <div class="exam-hero">
+          <div class="exam-hero-icon">📝</div>
+          <h1>Ujian Online</h1>
+          <p>SDN 2 Karangmangu — Isi data diri untuk memulai ujian</p>
+        </div>
+        <div class="card-body">
+          <div class="exam-info-row">
+            <div class="exam-info-chip"><div class="exam-info-icon">📋</div><div><div class="exam-info-val" id="totalQuestions">0</div><div class="exam-info-lbl">Total Soal</div></div></div>
+            <div class="exam-info-chip"><div class="exam-info-icon">⏱</div><div><div class="exam-info-val"><span id="displayDuration">60</span>m</div><div class="exam-info-lbl">Durasi</div></div></div>
+            <div class="exam-info-chip"><div class="exam-info-icon">🎯</div><div><div class="exam-info-val">≥60</div><div class="exam-info-lbl">KKM</div></div></div>
+          </div>
+          <form id="loginForm">
+            <div class="form-group">
+              <label class="form-label">Nama Lengkap</label>
+              <input type="text" id="studentName" class="form-control" required placeholder="Masukkan nama lengkap Anda">
+            </div>
+            <div class="form-group" style="margin-bottom:24px">
+              <label class="form-label">NIM / NIS</label>
+              <input type="text" id="studentId" class="form-control" required placeholder="Masukkan NIM/NIS Anda">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Mulai Ujian →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EXAM PAGE ══ -->
+    <div id="examPage" class="hidden">
+      <div class="timer-wrap" id="timerWrap">
+        <div><div class="timer-label">Sisa Waktu</div><div class="timer-value" id="timer">60:00</div></div>
+        <div class="timer-icon">⏳</div>
+      </div>
+      <div class="progress-header"><span class="progress-label" id="progLabel">Soal 1 dari 0</span><span class="progress-pct" id="progPct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+      <div class="card">
+        <div id="questionContainer" class="q-card" style="margin:0;border-radius:0;border:none;border-bottom:1px solid var(--border)"></div>
+        <div class="card-body" style="padding-top:20px">
+          <div class="nav-row">
+            <button class="btn btn-secondary" id="prevBtn">← Sebelumnya</button>
+            <button class="btn btn-primary" id="nextBtn">Selanjutnya →</button>
+            <button class="btn btn-success hidden" id="finishBtn">✅ Selesai Ujian</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RESULT PAGE ══ -->
+    <div id="resultPage" class="hidden">
+      <div class="card">
+        <div class="result-hero">
+          <div class="score-ring">
+            <svg viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="52"/>
+            </svg>
+            <div class="score-text"><div class="score-num" id="scoreNum">0</div><div class="score-sub">Nilai</div></div>
+          </div>
+          <div class="result-status" id="resultStatus">—</div>
+          <div class="result-sub-text" id="resultSubText"></div>
+        </div>
+        <div class="card-body">
+          <div class="result-detail-grid" id="resultDetailGrid"></div>
+        </div>
+        <div class="save-section">
+          <h4>💾 Simpan & Download Hasil</h4>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-success" id="saveDbBtn" style="flex:2;justify-content:center">💾 Simpan ke Google Sheets</button>
+            <button class="btn btn-secondary" id="downloadBtn" style="flex:1;justify-content:center">📥 CSV</button>
+          </div>
+          <div id="saveStatus" style="margin-top:10px"></div>
+        </div>
+        <div id="wrongSection" class="hidden">
+          <div class="wrong-title">📖 Pembahasan Jawaban Salah</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>No</th><th>Pertanyaan</th><th>Jawaban Anda</th><th>Jawaban Benar</th></tr></thead>
+              <tbody id="wrongBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-body" style="border-top:1px solid var(--border);padding-top:20px">
+          <button class="btn btn-primary btn-block btn-lg" id="resetBtn">Selesai & Kembali</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script>
+// ════════ STATE ════════
+var questions=[], currentQuestion=0, answers={}, timeLeft=3600;
+var examDurationMinutes=60, timerInterval=null;
+var studentName='', studentId='', allResults=[];
+var isStudentMode=false, webAppUrl='', currentExamResult=null;
+var LETTERS=['A','B','C','D','E'];
+
+var defaultQuestions=[
+  {question:"Apa kepanjangan dari HTML?",options:["Hyper Text Markup Language","High Tech Modern Language","Home Tool Markup Language","Hyperlinks and Text Markup Language"],correctAnswer:0},
+  {question:"Manakah yang bukan bahasa pemrograman?",options:["Python","Java","HTML","C++"],correctAnswer:2},
+  {question:"Apa fungsi CSS dalam web development?",options:["Mengatur database","Mengatur tampilan dan style","Membuat logika program","Mengelola server"],correctAnswer:1}
+];
+
+// ════════ INIT ════════
+loadWebAppUrl();
+var urlParams=new URLSearchParams(window.location.search);
+if(urlParams.get('mode')==='student'){
+  isStudentMode=true;
+  document.getElementById('adminPanel').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  loadStoredQuestions();
+} else {
+  document.getElementById('topbarRight').innerHTML='<span style="font-size:12px;font-weight:600;background:var(--primary-lt);color:var(--primary);border:1px solid var(--primary-bd);padding:5px 12px;border-radius:20px">👤 Admin</span>';
+}
+
+// ════════ ADMIN TABS ════════
+function showAdminTab(tab,el){
+  ['uploadTab','settingsTab','dashboardTab'].forEach(function(id){document.getElementById(id).classList.add('hidden');});
+  document.querySelectorAll('#adminTabs .tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById(tab+'Tab').classList.remove('hidden');
+  if(el) el.classList.add('active');
+  if(tab==='dashboard') loadDashboard();
+  if(tab==='settings'){loadWebAppUrl();var s=localStorage.getItem('web_app_url');if(s)document.getElementById('webAppUrl').value=s;}
+}
+
+document.getElementById('examDuration').addEventListener('input',function(){document.getElementById('timeDisplay').textContent=this.value;});
+
+// ════════ CSV ════════
+document.getElementById('csvFile').addEventListener('change',function(e){
+  var file=e.target.files[0];
+  if(file) Papa.parse(file,{header:true,skipEmptyLines:true,complete:function(r){parseQuestionsFromCSV(r.data);}});
+});
+document.getElementById('loadQuestionsBtn').addEventListener('click',function(){
+  var txt=document.getElementById('csvText').value.trim();
+  if(txt){Papa.parse(txt,{header:true,skipEmptyLines:true,complete:function(r){parseQuestionsFromCSV(r.data);},error:function(err){alert('Error CSV: '+err.message);}});}
+  else if(document.getElementById('csvFile').files.length>0){alert('File sudah dimuat!');}
+  else{alert('Upload atau paste CSV terlebih dahulu!');}
+});
+document.getElementById('useDefaultBtn').addEventListener('click',function(){
+  questions=defaultQuestions;saveQuestionsToStorage();
+  document.getElementById('questionsLoadedAlert').classList.remove('hidden');
+  document.getElementById('questionCount').textContent=questions.length;
+});
+
+function parseQuestionsFromCSV(data){
+  questions=[];
+  data.forEach(function(row){if(row.soal)questions.push({question:row.soal,options:[row.opsi_a||'',row.opsi_b||'',row.opsi_c||'',row.opsi_d||''],correctAnswer:parseInt(row.jawaban_benar)||0});});
+  if(questions.length>0){saveQuestionsToStorage();document.getElementById('questionsLoadedAlert').classList.remove('hidden');document.getElementById('questionCount').textContent=questions.length;}
+  else alert('Tidak ada soal valid di CSV!');
+}
+function saveQuestionsToStorage(){try{localStorage.setItem('exam_questions',JSON.stringify(questions));localStorage.setItem('exam_duration',examDurationMinutes);}catch(e){}}
+function loadStoredQuestions(){
+  try{
+    var q=localStorage.getItem('exam_questions');if(q)questions=JSON.parse(q);
+    var d=localStorage.getItem('exam_duration');if(d){examDurationMinutes=parseInt(d);timeLeft=examDurationMinutes*60;}
+    if(!questions.length)questions=defaultQuestions;
+    document.getElementById('totalQuestions').textContent=questions.length;
+    document.getElementById('displayDuration').textContent=examDurationMinutes;
+  }catch(e){questions=defaultQuestions;}
+}
+function loadWebAppUrl(){try{var s=localStorage.getItem('web_app_url');if(s)webAppUrl=s;}catch(e){}}
+
+// ════════ SAVE URL ════════
+document.getElementById('saveDbUrlBtn').addEventListener('click',function(){
+  var url=document.getElementById('webAppUrl').value.trim();
+  if(!url){alert('Masukkan URL Web App!');return;}
+  webAppUrl=url;localStorage.setItem('web_app_url',url);
+  var el=document.getElementById('connStatus');
+  el.innerHTML=mkAlert('info','','<span class="spinner"></span> Menguji koneksi...');
+  fetch(url+'?action=getSummary').then(function(r){return r.json();})
+    .then(function(d){el.innerHTML=d.success!==undefined?mkAlert('success','✅','Koneksi berhasil! Total data: <strong>'+d.total+'</strong>'):mkAlert('warning','⚠️','Respons tidak terduga.');})
+    .catch(function(){el.innerHTML=mkAlert('warning','⚠️','URL tersimpan. Koneksi tidak bisa ditest (CORS).');});
+});
+document.getElementById('saveSettingsBtn').addEventListener('click',function(){
+  examDurationMinutes=parseInt(document.getElementById('examDuration').value);timeLeft=examDurationMinutes*60;
+  localStorage.setItem('exam_duration',examDurationMinutes);alert('✅ Pengaturan disimpan!');
+});
+document.getElementById('openStudentPageBtn').addEventListener('click',function(){
+  if(!questions.length){alert('Upload soal terlebih dahulu!');return;}
+  window.open(window.location.pathname+'?mode=student','_blank');
+});
+
+// ════════ DASHBOARD ════════
+function loadDashboard(){
+  var dS=document.getElementById('dashSummary'),dT=document.getElementById('dashTable');
+  if(!webAppUrl){dS.innerHTML=mkAlert('warning','⚠️','URL Database belum dikonfigurasi.');dT.innerHTML='';return;}
+  dS.innerHTML=mkAlert('info','','<span class="spinner"></span> Memuat data...');
+  fetch(webAppUrl+'?action=getSummary').then(function(r){return r.json();})
+    .then(function(s){renderSummary(s);return fetch(webAppUrl+'?action=getData');})
+    .then(function(r){return r.json();})
+    .then(function(res){renderTable(res.data||[]);})
+    .catch(function(err){dS.innerHTML=mkAlert('danger','❌','Gagal memuat. Error: '+err.message);});
+}
+function renderSummary(s){
+  if(!s.success){document.getElementById('dashSummary').innerHTML=mkAlert('danger','❌','Gagal.');return;}
+  document.getElementById('dashSummary').innerHTML='<div class="stat-grid">'+
+    sc('👥',s.total,'Total Peserta','')+sc('✅',s.lulus,'Lulus','green')+sc('❌',s.tidak_lulus,'Tidak Lulus','red')+
+    sc('📈',s.rata_nilai,'Rata-rata','orange')+sc('🏆',s.nilai_tertinggi,'Tertinggi','green')+sc('📉',s.nilai_terendah,'Terendah','red')+'</div>';
+}
+function sc(icon,val,lbl,cls){return '<div class="stat-card"><div class="stat-card-icon">'+icon+'</div><div class="stat-val '+cls+'">'+val+'</div><div class="stat-lbl">'+lbl+'</div></div>';}
+function renderTable(data){
+  if(!data||!data.length){document.getElementById('dashTable').innerHTML=mkAlert('info','ℹ️','Belum ada data.');return;}
+  var html='<div class="toolbar"><div class="toolbar-search"><span class="toolbar-search-icon">🔍</span><input class="form-control" id="searchInput" placeholder="Cari nama atau NIM..." oninput="filterTable()"></div>'+
+    '<select class="form-control" id="filterStatus" onchange="filterTable()" style="width:auto;min-width:140px"><option value="">Semua Status</option><option value="LULUS">✅ Lulus</option><option value="TIDAK LULUS">❌ Tidak Lulus</option></select></div>'+
+    '<div class="table-wrap"><table><thead><tr><th>#</th><th>Waktu</th><th>NIM/NIS</th><th>Nama</th><th>Nilai</th><th>Benar</th><th>Durasi</th><th>Status</th></tr></thead><tbody id="tableBody">';
+  data.forEach(function(row,i){
+    var pass=row.status==='LULUS';
+    var wt=row.waktu_detik>=60?Math.floor(row.waktu_detik/60)+'m '+(row.waktu_detik%60)+'s':row.waktu_detik+'s';
+    var color=row.nilai>=80?'var(--green)':row.nilai>=60?'var(--orange)':'var(--red)';
+    html+='<tr data-nama="'+row.nama.toLowerCase()+'" data-nim="'+row.nim_nis.toLowerCase()+'" data-status="'+row.status+'">'+
+      '<td style="color:var(--muted);font-size:12px">'+(i+1)+'</td>'+
+      '<td style="font-size:12px;color:var(--muted);white-space:nowrap">'+row.timestamp+'</td>'+
+      '<td><code style="background:var(--primary-lt);color:var(--primary);padding:3px 8px;border-radius:5px;font-size:12px">'+row.nim_nis+'</code></td>'+
+      '<td style="font-weight:600">'+row.nama+'</td>'+
+      '<td><span class="td-score" style="color:'+color+'">'+row.nilai+'</span></td>'+
+      '<td style="color:var(--sub)">'+row.jawaban_benar+'/'+row.total_soal+'</td>'+
+      '<td style="color:var(--muted);font-size:13px">'+wt+'</td>'+
+      '<td><span class="badge '+(pass?'badge-success':'badge-danger')+'">'+(pass?'✅ Lulus':'❌ Tidak')+'</span></td></tr>';
+  });
+  html+='</tbody></table></div>';
+  document.getElementById('dashTable').innerHTML=html;
+}
+function filterTable(){
+  var q=(document.getElementById('searchInput')||{value:''}).value.toLowerCase();
+  var fs=(document.getElementById('filterStatus')||{value:''}).value;
+  document.querySelectorAll('#tableBody tr').forEach(function(r){
+    r.style.display=(r.dataset.nama.includes(q)||r.dataset.nim.includes(q))&&(!fs||r.dataset.status===fs)?'':'none';
+  });
+}
+
+// ════════ LOGIN ════════
+document.getElementById('loginForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  studentName=document.getElementById('studentName').value;
+  studentId=document.getElementById('studentId').value;
+  if(!questions.length){alert('Soal belum tersedia!');return;}
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('examPage').classList.remove('hidden');
+  startTimer();displayQuestion();
+});
+
+// ════════ TIMER ════════
+function startTimer(){
+  timerInterval=setInterval(function(){
+    timeLeft--;
+    var m=Math.floor(timeLeft/60),s=timeLeft%60;
+    document.getElementById('timer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if(timeLeft<=300) document.getElementById('timerWrap').classList.add('warning');
+    if(timeLeft<=0){clearInterval(timerInterval);alert('Waktu habis!');finishExam();}
+  },1000);
+}
+
+// ════════ QUESTION ════════
+function displayQuestion(){
+  var q=questions[currentQuestion];
+  var pct=Math.round(((currentQuestion+1)/questions.length)*100);
+  document.getElementById('progLabel').textContent='Soal '+(currentQuestion+1)+' dari '+questions.length;
+  document.getElementById('progPct').textContent=pct+'%';
+  document.getElementById('progressBar').style.width=pct+'%';
+
+  var html='<div class="q-number">📌 Soal '+(currentQuestion+1)+' dari '+questions.length+'</div>'+
+    '<div class="q-text">'+q.question+'</div><div class="options">';
+  q.options.forEach(function(opt,i){
+    html+='<button class="option'+(answers[currentQuestion]===i?' selected':'')+'" data-index="'+i+'">'+
+      '<span class="option-letter">'+LETTERS[i]+'</span>'+opt+'</button>';
+  });
+  html+='</div>';
+  document.getElementById('questionContainer').innerHTML=html;
+
+  document.querySelectorAll('.option').forEach(function(el){
+    el.addEventListener('click',function(){answers[currentQuestion]=parseInt(this.dataset.index);displayQuestion();});
+  });
+  document.getElementById('prevBtn').disabled=currentQuestion===0;
+  var isLast=currentQuestion===questions.length-1;
+  document.getElementById('nextBtn').classList.toggle('hidden',isLast);
+  document.getElementById('finishBtn').classList.toggle('hidden',!isLast);
+}
+
+document.getElementById('prevBtn').addEventListener('click',function(){if(currentQuestion>0){currentQuestion--;displayQuestion();}});
+document.getElementById('nextBtn').addEventListener('click',function(){if(currentQuestion<questions.length-1){currentQuestion++;displayQuestion();}});
+document.getElementById('finishBtn').addEventListener('click',function(){if(confirm('Yakin ingin menyelesaikan ujian?'))finishExam();});
+document.getElementById('resetBtn').addEventListener('click',function(){location.reload();});
+document.getElementById('downloadBtn').addEventListener('click',downloadResultsCSV);
+
+// ════════ FINISH ════════
+function finishExam(){
+  if(timerInterval)clearInterval(timerInterval);
+  var correct=0,wrong=[];
+  questions.forEach(function(q,i){
+    if(answers[i]===q.correctAnswer)correct++;
+    else wrong.push({no:i+1,question:q.question,studentAnswer:answers[i]!==undefined?q.options[answers[i]]:'Tidak dijawab',correctAnswer:q.options[q.correctAnswer]});
+  });
+  var score=Math.round((correct/questions.length)*100);
+  var timeTaken=(examDurationMinutes*60)-timeLeft;
+  currentExamResult={timestamp:new Date().toISOString(),nim_nis:studentId,nama:studentName,nilai:score,jawaban_benar:correct,total_soal:questions.length,waktu_detik:timeTaken};
+  allResults.push(currentExamResult);
+
+  document.getElementById('examPage').classList.add('hidden');
+  document.getElementById('resultPage').classList.remove('hidden');
+
+  // Animate ring
+  var C=2*Math.PI*52;
+  var ring=document.getElementById('ringFill');
+  ring.style.strokeDasharray=C;ring.style.strokeDashoffset=C;
+  ring.className='ring-fill '+(score>=80?'good':score>=60?'ok':'bad');
+  setTimeout(function(){ring.style.strokeDashoffset=C-(score/100)*C;},100);
+
+  document.getElementById('scoreNum').textContent=score;
+  document.getElementById('scoreNum').style.color=score>=80?'var(--green)':score>=60?'var(--orange)':'var(--red)';
+  document.getElementById('resultStatus').textContent=score>=80?'Luar Biasa! 🎉':score>=60?'Baik! 👍':'Perlu Belajar Lagi 📚';
+  document.getElementById('resultStatus').style.color=score>=80?'var(--green)':score>=60?'var(--orange)':'var(--red)';
+  document.getElementById('resultSubText').textContent=score>=60?'Selamat! Anda dinyatakan LULUS.':'Nilai belum mencapai KKM (60). Tetap semangat!';
+
+  var m=Math.floor(timeTaken/60),s=timeTaken%60;
+  document.getElementById('resultDetailGrid').innerHTML=
+    dc('👤 Nama',studentName)+dc('🆔 NIM/NIS',studentId)+dc('✅ Jawaban Benar',correct+' dari '+questions.length)+dc('⏱ Waktu',m+'m '+s+'s');
+
+  if(wrong.length>0){
+    document.getElementById('wrongSection').classList.remove('hidden');
+    document.getElementById('wrongBody').innerHTML=wrong.map(function(w){
+      return '<tr><td style="color:var(--muted)">'+w.no+'</td><td>'+w.question+'</td><td style="color:var(--red)">'+w.studentAnswer+'</td><td style="color:var(--green);font-weight:600">'+w.correctAnswer+'</td></tr>';
+    }).join('');
+  }
+
+  if(webAppUrl) setTimeout(saveToDatabase,800);
+}
+
+function dc(lbl,val){return '<div class="detail-chip"><div class="detail-chip-lbl">'+lbl+'</div><div class="detail-chip-val">'+val+'</div></div>';}
+
+// ════════ SAVE ════════
+document.getElementById('saveDbBtn').addEventListener('click',saveToDatabase);
+function saveToDatabase(){
+  if(!currentExamResult){alert('Tidak ada data!');return;}
+  if(!webAppUrl){document.getElementById('saveStatus').innerHTML=mkAlert('warning','⚠️','URL Database belum dikonfigurasi!');return;}
+  document.getElementById('saveStatus').innerHTML=mkAlert('info','','<span class="spinner"></span> Menyimpan...');
+  document.getElementById('saveDbBtn').disabled=true;
+  fetch(webAppUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(currentExamResult)})
+    .then(function(){document.getElementById('saveStatus').innerHTML=mkAlert('success','✅','Berhasil dikirim ke Google Sheets!');document.getElementById('saveDbBtn').textContent='✓ Sudah Disimpan';})
+    .catch(function(){document.getElementById('saveStatus').innerHTML=mkAlert('warning','⚠️','Permintaan terkirim (no-cors).');document.getElementById('saveDbBtn').textContent='✓ Terkirim';});
+}
+function downloadResultsCSV(){
+  var csv='timestamp,nim_nis,nama,nilai,jawaban_benar,total_soal,waktu_detik\n';
+  allResults.forEach(function(r){csv+=[r.timestamp,r.nim_nis,r.nama,r.nilai,r.jawaban_benar,r.total_soal,r.waktu_detik].join(',')+'\n';});
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hasil_ujian_'+studentId+'_'+Date.now()+'.csv';a.click();
+}
+function mkAlert(type,icon,msg){return '<div class="alert alert-'+type+'"><span class="alert-icon">'+icon+'</span><span class="alert-content">'+msg+'</span></div>';}
+</script>
+</body>
+</html>
